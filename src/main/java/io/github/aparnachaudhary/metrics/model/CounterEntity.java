@@ -1,4 +1,4 @@
-package io.github.aparnachaudhary.metrics;
+package io.github.aparnachaudhary.metrics.model;
 
 /**
  * Created by aparna on 11/17/15.

@@ -6,6 +6,7 @@ import com.mongodb.MongoException;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import io.github.aparnachaudhary.metrics.model.*;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,6 +144,7 @@ public class MongoDBReporter extends ScheduledReporter {
     private final String prefix;
     private final int timeout;
     private final MongoDatabase mongoDatabase;
+    private Map<String, Object> additionalFields;
 
     public MongoDBReporter(MetricRegistry registry, String databaseName, ServerAddress[] serverAddresses, int timeout,
                            Clock clock, String prefix, TimeUnit rateUnit, TimeUnit durationUnit,
@@ -153,7 +155,8 @@ public class MongoDBReporter extends ScheduledReporter {
         this.clock = clock;
         this.prefix = prefix;
         this.timeout = timeout;
-        mongoDatabase = getDB();
+        this.additionalFields = additionalFields;
+        this.mongoDatabase = getDB();
     }
 
     @Override

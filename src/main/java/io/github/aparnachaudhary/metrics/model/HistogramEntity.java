@@ -1,4 +1,4 @@
-package io.github.aparnachaudhary.metrics;
+package io.github.aparnachaudhary.metrics.model;
 
 import com.codahale.metrics.Snapshot;
 
