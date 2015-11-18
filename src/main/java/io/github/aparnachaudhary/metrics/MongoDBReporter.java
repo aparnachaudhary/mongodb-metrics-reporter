@@ -10,15 +10,15 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.codahale.metrics.MetricRegistry.name;
-
 
 /**
  * Created by aparna on 11/15/15.
@@ -169,8 +169,7 @@ public class MongoDBReporter extends ScheduledReporter {
             return;
         }
 
-        final long timestamp = clock.getTime() / 1000;
-        final Date reportingTime = new Date(timestamp);
+        final Date reportingTime = Date.from(ZonedDateTime.now(ZoneOffset.UTC).toInstant());
 
         for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
             if (entry.getValue().getValue() != null) {
