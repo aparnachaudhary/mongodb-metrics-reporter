@@ -1,7 +1,8 @@
 = mongodb-metrics-reporter
+:project-full-path: aparnachaudhary/mongodb-metrics-reporter
 
-image::https://travis-ci.org/aparnachaudhary/mongodb-metrics-reporter.png?branch=master["Build Status", link="https://travis-ci.org/aparnachaudhary/mongodb-metrics-reporter"]
-image::https://coveralls.io/repos/aparnachaudhary/mongodb-metrics-reporter/badge.png?branch=master&service=github["Build Status", link="https://coveralls.io/r/aparnachaudhary/mongodb-metrics-reporter?branch=master"]
+image:http://img.shields.io/travis/aparnachaudhary/mongodb-metrics-reporter/master.svg["Build Status (Travis CI)", link="https://travis-ci.org/aparnachaudhary/mongodb-metrics-reporter"]
+image:http://img.shields.io/coveralls/{project-full-path}/master.svg["Coverage Status", link="https://coveralls.io/r/{project-full-path}?branch=master"]
 
 This project provides a reporter for CodaHale/DropWizard Metrics library to store the metric data in MongoDB.
 
