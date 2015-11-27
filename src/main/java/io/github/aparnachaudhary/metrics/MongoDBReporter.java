@@ -226,7 +226,7 @@ public class MongoDBReporter extends ScheduledReporter {
         entity.setValue(value);
 
         try {
-            coll.insertOne(new Document(entity));
+            storeInMongo(coll, entity);
         } catch (MongoException e) {
             LOGGER.warn("Unable to report gauge {}", name, e);
         }
@@ -241,7 +241,7 @@ public class MongoDBReporter extends ScheduledReporter {
         entity.setTimestamp(timestamp);
 
         try {
-            coll.insertOne(new Document(entity));
+            storeInMongo(coll, entity);
         } catch (MongoException e) {
             LOGGER.warn("Unable to report counter {}", name, e);
         }
@@ -257,7 +257,7 @@ public class MongoDBReporter extends ScheduledReporter {
         entity.setTimestamp(timestamp);
 
         try {
-            coll.insertOne(new Document(entity));
+            storeInMongo(coll, entity);
         } catch (MongoException e) {
             LOGGER.warn("Unable to report histogram {}", name, e);
         }
@@ -268,9 +268,8 @@ public class MongoDBReporter extends ScheduledReporter {
         final MeteredEntity entity = new MeteredEntity(meter);
         entity.setName(name(prefix, name));
         entity.setTimestamp(timestamp);
-
         try {
-            coll.insertOne(new Document(entity));
+            storeInMongo(coll, entity);
         } catch (MongoException e) {
             LOGGER.warn("Unable to report meter {}", name, e);
         }
@@ -283,10 +282,22 @@ public class MongoDBReporter extends ScheduledReporter {
         entity.setTimestamp(timestamp);
 
         try {
-            coll.insertOne(new Document(entity));
+            storeInMongo(coll, entity);
         } catch (MongoException e) {
             LOGGER.warn("Unable to report timer {}", name, e);
         }
+    }
+
+
+    private void storeInMongo(MongoCollection coll, BaseEntity entity) {
+        final Document document = new Document(entity);
+
+        if (additionalFields != null) {
+            for (final Map.Entry<String, Object> field : additionalFields.entrySet()) {
+                document.putIfAbsent(field.getKey(), field.getValue());
+            }
+        }
+        coll.insertOne(document);
     }
 
     private MongoDatabase getDB() {
