@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <packaging>jar</packaging>
-    <name>${project.groupId} - ${project.artifactId}</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Reporter extension for the Codahale Metrics library which stores data in MongoDB</description>
     <url>http://github.com/aparnachaudhary/mongodb-metrics-reporter</url>
     <inceptionYear>2015</inceptionYear>
