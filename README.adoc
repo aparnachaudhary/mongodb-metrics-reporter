@@ -3,6 +3,7 @@
 
 image:http://img.shields.io/travis/aparnachaudhary/mongodb-metrics-reporter/master.svg["Build Status (Travis CI)", link="https://travis-ci.org/aparnachaudhary/mongodb-metrics-reporter"]
 image:http://img.shields.io/coveralls/{project-full-path}/master.svg["Coverage Status", link="https://coveralls.io/r/{project-full-path}?branch=master"]
+image:http://img.shields.io/badge/license-APACHE2-blue.svg["Apache License", link="https://www.apache.org/licenses/LICENSE-2.0.html"]
 
 This project provides a reporter for CodaHale/DropWizard Metrics library to store the metric data in MongoDB.
 
