@@ -8,6 +8,8 @@ This project provides a reporter for CodaHale/DropWizard Metrics library to stor
 * Java8
 
 == Building
+image::https://travis-ci.org/aparnachaudhary/mongodb-metrics-reporter.png?branch=master["Build Status", link="https://travis-ci.org/aparnachaudhary/mongodb-metrics-reporter"]
+image::https://coveralls.io/repos/aparnachaudhary/mongodb-metrics-reporter/badge.png?branch=master["Build Status", link="https://coveralls.io/r/aparnachaudhary/mongodb-metrics-reporter?branch=master"]
 
 Clone the repository using command
 
