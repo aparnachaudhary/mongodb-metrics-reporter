@@ -49,3 +49,9 @@ Add the following dependency to your project's Maven POM file.
     </dependency>
 ----
 
+== Samples
+
+Sample applications demonstrating the use of Metrics library with MongoDB reporter.
+
+* JavaSE application - https://github.com/aparnachaudhary/mongodb-metrics-demo/tree/master/javase-demo
+* JavaEE application - https://github.com/aparnachaudhary/mongodb-metrics-demo/tree/master/javaee-demo
