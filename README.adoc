@@ -1,3 +1,46 @@
 = mongodb-metrics-reporter
 
-MongoDB Reporter for Metric library
+This project provides a reporter for CodaHale/DropWizard Metrics library to store the metric data in MongoDB.
+
+== Build Requirements:
+
+* Apache Maven version 3.x
+* Java8
+
+== Building
+
+Clone the repository using command
+
+[source,bash]
+----
+git clone git://github.com/aparnachaudhary/mongodb-metrics-reporter.git
+----
+
+To build, issue this from the command line
+
+[source,bash]
+----
+mvn clean install
+----
+
+== Dependencies
+
+The module has following compile time dependencies
+
+* io.dropwizard.metrics:metrics-core:jar:3.1.2
+* org.mongodb:mongo-java-driver:jar:3.1.1
+* org.slf4j:slf4j-api:jar:1.7.12
+
+== Usage
+
+Add the following dependency to your project's Maven POM file.
+
+[source,xml]
+----
+    <dependency>
+        <groupId>io.github.aparnachaudhary.metrics</groupId>
+        <artifactId>mongodb-reporter</artifactId>
+        <version>${version.mongodb-reporter}</version>
+    </dependency>
+----
+
