@@ -54,7 +54,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Inject your custom definition of how time passes. Usually the default clock is sufficient
+         * Inject your custom definition of how time passes. Usually the default clock is sufficient.
+         *
+         * @param clock clock
+         * @return Builder
          */
         public Builder withClock(Clock clock) {
             this.clock = clock;
@@ -62,7 +65,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Configure a prefix for each metric name. Optional, but useful to identify single hosts
+         * Configure a prefix for each metric name. Optional, but useful to identify originator of metric
+         *
+         * @param prefix prefix for metric name
+         * @return Builder
          */
         public Builder prefixedWith(String prefix) {
             this.prefix = prefix;
@@ -70,7 +76,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Convert all the rates to a certain timeunit, defaults to seconds
+         * Convert all the rates to a certain TimeUnit, defaults to seconds
+         *
+         * @param rateUnit unit of rate
+         * @return Builder
          */
         public Builder convertRatesTo(TimeUnit rateUnit) {
             this.rateUnit = rateUnit;
@@ -78,7 +87,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Convert all the durations to a certain timeunit, defaults to milliseconds
+         * Convert all the durations to a certain TimeUnit, defaults to milliseconds
+         *
+         * @param durationUnit unit of duration
+         * @return Builder
          */
         public Builder convertDurationsTo(TimeUnit durationUnit) {
             this.durationUnit = durationUnit;
@@ -87,6 +99,9 @@ public class MongoDBReporter extends ScheduledReporter {
 
         /**
          * Allows to configure a special MetricFilter, which defines what metrics are reported
+         *
+         * @param filter metrics filter
+         * @return Builder
          */
         public Builder filter(MetricFilter filter) {
             this.filter = filter;
@@ -104,7 +119,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * The timeout to wait for until a connection attempt is and the next host is tried
+         * MongoDB connection timeout
+         *
+         * @param timeout connection timeout
+         * @return Builder
          */
         public Builder timeout(int timeout) {
             this.timeout = timeout;
@@ -114,8 +132,8 @@ public class MongoDBReporter extends ScheduledReporter {
         /**
          * Additional fields to be included for each metric
          *
-         * @param additionalFields
-         * @return
+         * @param additionalFields custom fields for reporting
+         * @return Builder
          */
         public Builder additionalFields(Map<String, Object> additionalFields) {
             this.additionalFields = additionalFields;
