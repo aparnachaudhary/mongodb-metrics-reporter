@@ -38,8 +38,8 @@ Add the following dependency to your project's Maven POM file.
 [source,xml]
 ----
     <dependency>
-        <groupId>io.github.aparnachaudhary.metrics</groupId>
-        <artifactId>mongodb-reporter</artifactId>
+        <groupId>io.github.aparnachaudhary</groupId>
+        <artifactId>mongodb-metrics</artifactId>
         <version>${version.mongodb-reporter}</version>
     </dependency>
 ----
