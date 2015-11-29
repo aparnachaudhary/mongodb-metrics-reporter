@@ -80,7 +80,7 @@ Executing the above program creates two collections (counter and gauge) in javas
 
 *Counter collection:*
 
-[source,json]
+[source]
 ----
 /* 0 */
 {
@@ -100,7 +100,7 @@ Executing the above program creates two collections (counter and gauge) in javas
 ----
 
 *Gauge collection:*
-[source,json]
+[source]
 ----
 /* 0 */
 {
