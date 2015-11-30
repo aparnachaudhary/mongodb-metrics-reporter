@@ -8,6 +8,8 @@ image:https://img.shields.io/maven-central/v/io.github.aparnachaudhary/mongodb-m
 
 This project provides a reporter for CodaHale/DropWizard Metrics library to store the metric data in MongoDB.
 
+image::MetricsMongoDB.png[]
+
 == Build Requirements:
 
 * Apache Maven version 3.x
