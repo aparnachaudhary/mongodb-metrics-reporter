@@ -10,8 +10,11 @@ import com.mongodb.client.MongoDatabase;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
 import org.junit.After;
 import org.junit.Before;
 
@@ -38,10 +41,15 @@ public class AbstractMetricTest {
 
     @Before
     public void setUp() throws Exception {
-        MongodConfig mongodConfig = new MongodConfig(Version.Main.V2_0, 27017, false);
-        MongodStarter runtime = MongodStarter.getDefaultInstance();
-        mongodExecutable = runtime.prepare(mongodConfig);
-        MongodProcess mongod = mongodExecutable.start();
+        final MongodStarter starter = MongodStarter.getDefaultInstance();
+        final int port = 27017;
+        final IMongodConfig mongodConfig = new MongodConfigBuilder()
+                .version(Version.Main.V3_0)
+                .net(new Net(port, Network.localhostIsIPv6()))
+                .build();
+
+        mongodExecutable = starter.prepare(mongodConfig);
+        final MongodProcess mongod = mongodExecutable.start();
 
         reporter = MongoDBReporter.forRegistry(registry)
                 .withClock(new Clock.UserTimeClock())
@@ -50,7 +58,7 @@ public class AbstractMetricTest {
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .filter(MetricFilter.ALL)
                 .withDatabaseName(databaseName)
-                .serverAddresses(new ServerAddress[]{new ServerAddress("localhost", 27017)})
+                .serverAddresses(new ServerAddress[]{new ServerAddress("localhost", port)})
                 .build();
     }
 
