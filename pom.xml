@@ -241,7 +241,6 @@
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>${version.coveralls-maven-plugin}</version>
                 </plugin>
-
                 <plugin>
                     <groupId>org.asciidoctor</groupId>
                     <artifactId>asciidoctor-maven-plugin</artifactId>
