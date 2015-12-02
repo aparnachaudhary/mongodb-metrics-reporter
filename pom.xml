@@ -67,6 +67,11 @@
             <name>Sonatype Nexus release repository</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+        <site>
+            <id>github-pages-site</id>
+            <name>Deployment through GitHub's site deployment plugin</name>
+            <url>docs/${project.version}</url>
+        </site>
     </distributionManagement>
 
     <properties>
@@ -91,6 +96,7 @@
         <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
         <version.maven-release-plugin>2.5.3</version.maven-release-plugin>
         <version.asciidoctor-maven-plugin>1.5.2.1</version.asciidoctor-maven-plugin>
+        <version.site-maven-plugin>0.12</version.site-maven-plugin>
     </properties>
 
     <dependencyManagement>
@@ -265,6 +271,12 @@
                             <experimental>true</experimental>
                         </attributes>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <!-- Deploy the web site -->
+                    <groupId>com.github.github</groupId>
+                    <artifactId>site-maven-plugin</artifactId>
+                    <version>${version.site-maven-plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

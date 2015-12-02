@@ -14,12 +14,39 @@
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Documentation for Metrics MongoDB reporter</description>
 
+    <properties>
+        <doc.output>${project.build.directory}/generated-docs</doc.output>
+    </properties>
+
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!-- Deploy the web site -->
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <!-- select the Maven phase in which the plugin will be executed -->
+                        <phase>site-deploy</phase>
+                        <configuration>
+                            <path>${project.distributionManagement.site.url}</path>
+                            <!-- The commit message -->
+                            <message>Creating documentation for ${project.groupId}:${project.artifactId}-${project.version}</message>
+                            <!-- The location where the site is uploaded -->
+                            <outputDirectory>${doc.output}</outputDirectory>
+                            <!-- Use merge or override the content -->
+                            <merge>true</merge>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
