@@ -1,45 +1,6 @@
-= mongodb-metrics-reporter
-:project-full-path: aparnachaudhary/mongodb-metrics-reporter
+== Getting Started
 
-image:http://img.shields.io/travis/aparnachaudhary/mongodb-metrics-reporter/master.svg["Build Status (Travis CI)", link="https://travis-ci.org/aparnachaudhary/mongodb-metrics-reporter"]
-image:http://img.shields.io/coveralls/{project-full-path}/master.svg["Coverage Status", link="https://coveralls.io/r/{project-full-path}?branch=master"]
-image:http://img.shields.io/badge/license-APACHE2-blue.svg["Apache License", link="https://www.apache.org/licenses/LICENSE-2.0.html"]
-image:https://img.shields.io/maven-central/v/io.github.aparnachaudhary/mongodb-metrics.svg["Maven Central",link="http://mvnrepository.com/artifact/io.github.aparnachaudhary/mongodb-metrics"]
-
-This project provides a reporter for CodaHale/DropWizard Metrics library to store the metric data in MongoDB.
-
-image::MetricsMongoDB.png[]
-
-== Build Requirements:
-
-* Apache Maven version 3.x
-* Java8
-
-== Building
-
-Clone the repository using command
-
-[source,bash]
-----
-git clone git://github.com/aparnachaudhary/mongodb-metrics-reporter.git
-----
-
-To build, issue this from the command line
-
-[source,bash]
-----
-mvn clean install
-----
-
-== Dependencies
-
-The module has following compile time dependencies
-
-* io.dropwizard.metrics:metrics-core:jar:3.1.2
-* org.mongodb:mongo-java-driver:jar:3.1.1
-* org.slf4j:slf4j-api:jar:1.7.13
-
-== Usage
+=== Setting Up Maven
 
 Add the following dependency to your project's Maven POM file.
 
@@ -51,6 +12,8 @@ Add the following dependency to your project's Maven POM file.
         <version>${version.mongodb-reporter}</version>
     </dependency>
 ----
+
+=== Configuring the reporter
 
 [source,java]
 ----
@@ -152,10 +115,3 @@ Executing the above program creates two collections (counter and gauge) in javas
     "timestamp" : ISODate("2015-11-29T17:53:07Z")
 }
 ----
-
-== Samples
-
-Sample applications demonstrating the use of Metrics library with MongoDB reporter.
-
-* JavaSE application - https://github.com/aparnachaudhary/mongodb-metrics-demo/tree/master/javase-demo
-* JavaEE application - https://github.com/aparnachaudhary/mongodb-metrics-demo/tree/master/javaee-demo

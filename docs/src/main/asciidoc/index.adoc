@@ -1,0 +1,15 @@
+= Introduction
+Aparna Chaudhary
+:toc2:
+:icons: font
+:toclevels: 2
+:numbered:
+
+
+The _mongodb-metrics_ module provides _MongoDBReporter_, which allows your application to constantly stream metric values to a MongoDB server.
+
+image::MetricsMongoDB.png[]
+
+include::getting_started.adoc[]
+include::javase.adoc[]
+include::javaee.adoc[]

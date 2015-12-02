@@ -20,6 +20,7 @@
 
     <modules>
         <module>mongodb-metrics</module>
+        <module>docs</module>
     </modules>
 
     <licenses>
@@ -70,6 +71,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- maven-compiler-plugin -->
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+
         <version.metrics-core>3.1.2</version.metrics-core>
         <version.mongo-java-driver>3.1.1</version.mongo-java-driver>
         <version.slf4j-api>1.7.13</version.slf4j-api>
@@ -85,7 +90,7 @@
         <version.coveralls-maven-plugin>4.0.0</version.coveralls-maven-plugin>
         <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
         <version.maven-release-plugin>2.5.3</version.maven-release-plugin>
-
+        <version.asciidoctor-maven-plugin>1.5.2.1</version.asciidoctor-maven-plugin>
     </properties>
 
     <dependencyManagement>
@@ -145,8 +150,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${version.maven-compiler-plugin}</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -229,6 +234,37 @@
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>${version.coveralls-maven-plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.asciidoctor</groupId>
+                    <artifactId>asciidoctor-maven-plugin</artifactId>
+                    <version>${version.asciidoctor-maven-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>create-html</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>process-asciidoc</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <toc>true</toc>
+                        <backend>html5</backend>
+                        <doctype>book</doctype>
+                        <goalPrefix>asciidoctor</goalPrefix>
+                        <sourceHighlighter>coderay</sourceHighlighter>
+                        <attributes>
+                            <idprefix/>
+                            <sectanchors>true</sectanchors>
+                            <toclevels>3</toclevels>
+                            <numbered>true</numbered>
+                            <icons>font</icons>
+                            <docinfo>true</docinfo>
+                            <experimental>true</experimental>
+                        </attributes>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
