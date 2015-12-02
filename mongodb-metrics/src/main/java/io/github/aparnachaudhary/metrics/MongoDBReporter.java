@@ -1,9 +1,7 @@
 package io.github.aparnachaudhary.metrics;
 
 import com.codahale.metrics.*;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoException;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.github.aparnachaudhary.metrics.model.*;
@@ -40,8 +38,9 @@ public class MongoDBReporter extends ScheduledReporter {
         private TimeUnit durationUnit;
         private MetricFilter filter;
         private ServerAddress[] serverAddresses = new ServerAddress[]{new ServerAddress("localhost", 27017)};
+        private MongoCredential[] mongoCredentials;
+        private MongoClientOptions mongoClientOptions;
         private String databaseName = "metricstore";
-        private int timeout = 1000;
         private Map<String, Object> additionalFields;
 
         private Builder(MetricRegistry registry) {
@@ -51,6 +50,7 @@ public class MongoDBReporter extends ScheduledReporter {
             this.rateUnit = TimeUnit.SECONDS;
             this.durationUnit = TimeUnit.MILLISECONDS;
             this.filter = MetricFilter.ALL;
+            this.mongoClientOptions = new MongoClientOptions.Builder().build();
         }
 
         /**
@@ -118,16 +118,16 @@ public class MongoDBReporter extends ScheduledReporter {
             return this;
         }
 
-        /**
-         * MongoDB connection timeout
-         *
-         * @param timeout connection timeout
-         * @return Builder
-         */
-        public Builder timeout(int timeout) {
-            this.timeout = timeout;
+        public Builder mongoClientOptions(MongoClientOptions mongoClientOptions) {
+            this.mongoClientOptions = mongoClientOptions;
             return this;
         }
+
+        public Builder mongoCredentials(MongoCredential[] mongoCredentials) {
+            this.mongoCredentials = mongoCredentials;
+            return this;
+        }
+
 
         /**
          * Additional fields to be included for each metric
@@ -144,7 +144,8 @@ public class MongoDBReporter extends ScheduledReporter {
             return new MongoDBReporter(registry,
                     databaseName,
                     serverAddresses,
-                    timeout,
+                    mongoCredentials,
+                    mongoClientOptions,
                     clock,
                     prefix,
                     rateUnit,
@@ -157,22 +158,24 @@ public class MongoDBReporter extends ScheduledReporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBReporter.class);
 
     private final ServerAddress[] serverAddresses;
+    private final MongoCredential[] mongoCredentials;
+    private final MongoClientOptions mongoClientOptions;
     private final String databaseName;
     private final Clock clock;
     private final String prefix;
-    private final int timeout;
     private final MongoDatabase mongoDatabase;
     private Map<String, Object> additionalFields;
 
-    public MongoDBReporter(MetricRegistry registry, String databaseName, ServerAddress[] serverAddresses, int timeout,
+    public MongoDBReporter(MetricRegistry registry, String databaseName, ServerAddress[] serverAddresses, MongoCredential[] mongoCredentials, MongoClientOptions mongoClientOptions,
                            Clock clock, String prefix, TimeUnit rateUnit, TimeUnit durationUnit,
                            MetricFilter filter, Map<String, Object> additionalFields) {
         super(registry, "mongodb-reporter", filter, rateUnit, durationUnit);
         this.databaseName = databaseName;
         this.serverAddresses = serverAddresses;
+        this.mongoCredentials = mongoCredentials;
+        this.mongoClientOptions = mongoClientOptions;
         this.clock = clock;
         this.prefix = prefix;
-        this.timeout = timeout;
         this.additionalFields = additionalFields;
         this.mongoDatabase = getDB();
     }
@@ -301,8 +304,12 @@ public class MongoDBReporter extends ScheduledReporter {
     }
 
     private MongoDatabase getDB() {
-        MongoClient mongoClient = new MongoClient(Arrays.asList(serverAddresses));
-        MongoDatabase database = mongoClient.getDatabase(databaseName);
-        return database;
+        MongoClient mongoClient = null;
+        if (mongoCredentials == null) {
+            mongoClient = new MongoClient(Arrays.asList(serverAddresses), mongoClientOptions);
+        } else {
+            mongoClient = new MongoClient(Arrays.asList(serverAddresses), Arrays.asList(mongoCredentials), mongoClientOptions);
+        }
+        return mongoClient.getDatabase(databaseName);
     }
 }
