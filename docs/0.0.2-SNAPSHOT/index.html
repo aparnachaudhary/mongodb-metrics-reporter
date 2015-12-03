@@ -526,7 +526,7 @@ table.CodeRay td.code>pre{padding:0}
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <em>mongodb-metrics</em> module provides <em>MongoDBReporter</em>, which allows your application to constantly stream metric values to a MongoDB server.</p>
+<p>The <code>mongodb-metrics</code> module provides <code>MongoDBReporter</code>, which allows your application to constantly stream metric values to a MongoDB server.</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -538,6 +538,9 @@ table.CodeRay td.code>pre{padding:0}
 <div class="sect1">
 <h2 id="getting_started"><a class="anchor" href="#getting_started"></a>1. Getting Started</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The following guide will help you with the first steps towards using the amazing Metrics library with MongoDB reporter.</p>
+</div>
 <div class="sect2">
 <h3 id="setting_up_maven"><a class="anchor" href="#setting_up_maven"></a>1.1. Setting Up Maven</h3>
 <div class="paragraph">
@@ -552,37 +555,96 @@ table.CodeRay td.code>pre{padding:0}
     <span class="tag">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Make sure you have a <code>version.mongodb-reporter</code> property declared in your POM with the current version, which is 0.0.2.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This reporter has compile time dependencies towards following libraries:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>io.dropwizard.metrics:metrics-core:jar:3.1.2</p>
+</li>
+<li>
+<p>org.mongodb:mongo-java-driver:jar:3.1.1</p>
+</li>
+<li>
+<p>org.slf4j:slf4j-api:jar:1.7.13</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Note that MongoDB java driver is compatible with 2.4.x, 2.6.x and 3.0.x. So as long as you use one of these versions of MongoDB; you are fine.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="configuring_the_reporter"><a class="anchor" href="#configuring_the_reporter"></a>1.2. Configuring the reporter</h3>
+<div class="paragraph">
+<p>Once you add the maven dependency; next step is to create a registry and configure the reporter with it.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">        <span class="comment">// create metric registry</span>
-        MetricRegistry metricRegistry = <span class="keyword">new</span> MetricRegistry();
-        <span class="comment">// register JVM metrics</span>
-        metricRegistry.register(<span class="string"><span class="delimiter">&quot;</span><span class="content">jvm.attribute</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> JvmAttributeGaugeSet());
+<pre class="CodeRay highlight"><code data-lang="java">    <span class="comment">// create metric registry</span>
+    MetricRegistry metricRegistry = <span class="keyword">new</span> MetricRegistry();
 
-        MongoDBReporter reporter = MongoDBReporter.forRegistry(metricRegistry)
-                .serverAddresses(<span class="keyword">new</span> ServerAddress<span class="type">[]</span>{<span class="keyword">new</span> ServerAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">192.168.99.100</span><span class="delimiter">&quot;</span></span>, <span class="integer">32768</span>)})
-                .withDatabaseName(<span class="string"><span class="delimiter">&quot;</span><span class="content">javasedemo</span><span class="delimiter">&quot;</span></span>)
-                .prefixedWith(<span class="string"><span class="delimiter">&quot;</span><span class="content">javase</span><span class="delimiter">&quot;</span></span>)
-                .build();
-        <span class="comment">// Report metrics every 5 seconds</span>
-        reporter.start(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS);
+    <span class="comment">// configure the reporter</span>
+    MongoDBReporter reporter = MongoDBReporter.forRegistry(metricRegistry)
+            .serverAddresses(<span class="keyword">new</span> ServerAddress<span class="type">[]</span>{<span class="keyword">new</span> ServerAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">192.168.99.100</span><span class="delimiter">&quot;</span></span>, <span class="integer">32768</span>)}) <i class="conum" data-value="1"></i><b>(1)</b>
+            .withDatabaseName(<span class="string"><span class="delimiter">&quot;</span><span class="content">javasedemo</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="2"></i><b>(2)</b>
+            .prefixedWith(<span class="string"><span class="delimiter">&quot;</span><span class="content">javase</span><span class="delimiter">&quot;</span></span>) <i class="conum" data-value="3"></i><b>(3)</b>
+            .build();
 
-        <span class="comment">// register metric</span>
-        metricRegistry.counter(<span class="string"><span class="delimiter">&quot;</span><span class="content">demo.counter</span><span class="delimiter">&quot;</span></span>).inc();
+    <span class="comment">// Report metrics every 5 seconds to MongoDB</span>
+    reporter.start(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>MongoDB connection details</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Name of the database in MongoDB</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Prefixes the metrics that are reported with the give identifier</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now that we have configured the registry and the reporter; next step is to perform some instrumentation.
+For the demo, we use a simple metric <em>counter</em>. A counter is just a counter. You can increment or decrement its value.
+You can use it, for instance, for counting the number of requests made to a particular HTTP endpoint.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">    <span class="comment">// register metric</span>
+    metricRegistry.counter(<span class="string"><span class="delimiter">&quot;</span><span class="content">demo.counter</span><span class="delimiter">&quot;</span></span>);
 
-        <span class="comment">// sleep for 10 seconds so that metric is reported to MongoDB store</span>
-        <span class="keyword">try</span> {
-            <span class="predefined-type">TimeUnit</span>.SECONDS.sleep(<span class="integer">10</span>);
-        } <span class="keyword">catch</span> (<span class="exception">InterruptedException</span> e) {
-            e.printStackTrace();
-        }</code></pre>
+    <span class="comment">// sleep for 10 seconds so that metric is reported to MongoDB store</span>
+    <span class="keyword">try</span> {
+        <span class="predefined-type">TimeUnit</span>.SECONDS.sleep(<span class="integer">10</span>);
+    } <span class="keyword">catch</span> (<span class="exception">InterruptedException</span> e) {
+        e.printStackTrace();
+        <span class="predefined-type">Thread</span>.currentThread().interrupt();
+    }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Executing the above program creates two collections (counter and gauge) in javasedemo database.</p>
+<p>Executing the above program creates a collection <code>counter</code> in <code>javasedemo</code> database.</p>
 </div>
 <div class="paragraph">
 <p><strong>Counter collection:</strong></p>
@@ -602,60 +664,6 @@ table.CodeRay td.code>pre{padding:0}
     "_id" : ObjectId("565b3b83c8f3530f3a327005"),
     "name" : "javase.demo.counter",
     "count" : 1,
-    "timestamp" : ISODate("2015-11-29T17:53:07Z")
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Gauge collection:</strong></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code>/* 0 */
-{
-    "_id" : ObjectId("565b3b7ec8f3530f3a326ffe"),
-    "name" : "javase.jvm.attribute.name",
-    "value" : "69434@server.local",
-    "timestamp" : ISODate("2015-11-29T17:53:02Z")
-}
-
-/* 1 */
-{
-    "_id" : ObjectId("565b3b7ec8f3530f3a326fff"),
-    "name" : "javase.jvm.attribute.uptime",
-    "value" : 5711,
-    "timestamp" : ISODate("2015-11-29T17:53:02Z")
-}
-
-/* 2 */
-{
-    "_id" : ObjectId("565b3b7ec8f3530f3a327000"),
-    "name" : "javase.jvm.attribute.vendor",
-    "value" : "Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.5-b02 (1.8)",
-    "timestamp" : ISODate("2015-11-29T17:53:02Z")
-}
-
-/* 3 */
-{
-    "_id" : ObjectId("565b3b83c8f3530f3a327002"),
-    "name" : "javase.jvm.attribute.name",
-    "value" : "69434@server.local",
-    "timestamp" : ISODate("2015-11-29T17:53:07Z")
-}
-
-/* 4 */
-{
-    "_id" : ObjectId("565b3b83c8f3530f3a327003"),
-    "name" : "javase.jvm.attribute.uptime",
-    "value" : 10561,
-    "timestamp" : ISODate("2015-11-29T17:53:07Z")
-}
-
-/* 5 */
-{
-    "_id" : ObjectId("565b3b83c8f3530f3a327004"),
-    "name" : "javase.jvm.attribute.vendor",
-    "value" : "Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.5-b02 (1.8)",
     "timestamp" : ISODate("2015-11-29T17:53:07Z")
 }</code></pre>
 </div>
@@ -682,7 +690,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-12-01 12:39:41 CET
+Last updated 2015-12-03 20:10:02 CET
 </div>
 </div>
 </body>
