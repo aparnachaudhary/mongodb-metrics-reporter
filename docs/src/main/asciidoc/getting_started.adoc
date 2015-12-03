@@ -1,8 +1,11 @@
 == Getting Started
 
+The following guide will help you with the first steps towards using the amazing Metrics library with MongoDB reporter.
+
 === Setting Up Maven
 
 Add the following dependency to your project's Maven POM file.
+
 
 [source,xml]
 ----
@@ -13,35 +16,60 @@ Add the following dependency to your project's Maven POM file.
     </dependency>
 ----
 
+NOTE: Make sure you have a ``version.mongodb-reporter`` property declared in your POM with the current version, which is 0.0.2.
+
+This reporter has compile time dependencies towards following libraries:
+
+* io.dropwizard.metrics:metrics-core:jar:3.1.2
+* org.mongodb:mongo-java-driver:jar:3.1.1
+* org.slf4j:slf4j-api:jar:1.7.13
+
+Note that MongoDB java driver is compatible with 2.4.x, 2.6.x and 3.0.x. So as long as you use one of these versions of MongoDB; you are fine.
+
+
 === Configuring the reporter
+
+Once you add the maven dependency; next step is to create a registry and configure the reporter with it.
 
 [source,java]
 ----
-        // create metric registry
-        MetricRegistry metricRegistry = new MetricRegistry();
-        // register JVM metrics
-        metricRegistry.register("jvm.attribute", new JvmAttributeGaugeSet());
+    // create metric registry
+    MetricRegistry metricRegistry = new MetricRegistry();
 
-        MongoDBReporter reporter = MongoDBReporter.forRegistry(metricRegistry)
-                .serverAddresses(new ServerAddress[]{new ServerAddress("192.168.99.100", 32768)})
-                .withDatabaseName("javasedemo")
-                .prefixedWith("javase")
-                .build();
-        // Report metrics every 5 seconds
-        reporter.start(5, TimeUnit.SECONDS);
+    // configure the reporter
+    MongoDBReporter reporter = MongoDBReporter.forRegistry(metricRegistry)
+            .serverAddresses(new ServerAddress[]{new ServerAddress("192.168.99.100", 32768)}) # <1>
+            .withDatabaseName("javasedemo") # <2>
+            .prefixedWith("javase") # <3>
+            .build();
 
-        // register metric
-        metricRegistry.counter("demo.counter").inc();
+    // Report metrics every 5 seconds to MongoDB
+    reporter.start(5, TimeUnit.SECONDS);
+----
+<1> MongoDB connection details
+<2> Name of the database in MongoDB
+<3> Prefixes the metrics that are reported with the give identifier
 
-        // sleep for 10 seconds so that metric is reported to MongoDB store
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+Now that we have configured the registry and the reporter; next step is to perform some instrumentation.
+For the demo, we use a simple metric _counter_. A counter is just a counter. You can increment or decrement its value.
+You can use it, for instance, for counting the number of requests made to a particular HTTP endpoint.
+
+[source,java]
+----
+    // register metric
+    metricRegistry.counter("demo.counter");
+
+    // sleep for 10 seconds so that metric is reported to MongoDB store
+    try {
+        TimeUnit.SECONDS.sleep(10);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+        Thread.currentThread().interrupt();
+    }
 ----
 
-Executing the above program creates two collections (counter and gauge) in javasedemo database.
+Executing the above program creates a collection ``counter`` in ``javasedemo`` database.
 
 *Counter collection:*
 
@@ -64,54 +92,3 @@ Executing the above program creates two collections (counter and gauge) in javas
 }
 ----
 
-*Gauge collection:*
-[source]
-----
-/* 0 */
-{
-    "_id" : ObjectId("565b3b7ec8f3530f3a326ffe"),
-    "name" : "javase.jvm.attribute.name",
-    "value" : "69434@server.local",
-    "timestamp" : ISODate("2015-11-29T17:53:02Z")
-}
-
-/* 1 */
-{
-    "_id" : ObjectId("565b3b7ec8f3530f3a326fff"),
-    "name" : "javase.jvm.attribute.uptime",
-    "value" : 5711,
-    "timestamp" : ISODate("2015-11-29T17:53:02Z")
-}
-
-/* 2 */
-{
-    "_id" : ObjectId("565b3b7ec8f3530f3a327000"),
-    "name" : "javase.jvm.attribute.vendor",
-    "value" : "Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.5-b02 (1.8)",
-    "timestamp" : ISODate("2015-11-29T17:53:02Z")
-}
-
-/* 3 */
-{
-    "_id" : ObjectId("565b3b83c8f3530f3a327002"),
-    "name" : "javase.jvm.attribute.name",
-    "value" : "69434@server.local",
-    "timestamp" : ISODate("2015-11-29T17:53:07Z")
-}
-
-/* 4 */
-{
-    "_id" : ObjectId("565b3b83c8f3530f3a327003"),
-    "name" : "javase.jvm.attribute.uptime",
-    "value" : 10561,
-    "timestamp" : ISODate("2015-11-29T17:53:07Z")
-}
-
-/* 5 */
-{
-    "_id" : ObjectId("565b3b83c8f3530f3a327004"),
-    "name" : "javase.jvm.attribute.vendor",
-    "value" : "Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.5-b02 (1.8)",
-    "timestamp" : ISODate("2015-11-29T17:53:07Z")
-}
-----

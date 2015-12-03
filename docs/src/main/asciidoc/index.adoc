@@ -6,7 +6,7 @@ Aparna Chaudhary
 :numbered:
 
 
-The _mongodb-metrics_ module provides _MongoDBReporter_, which allows your application to constantly stream metric values to a MongoDB server.
+The ``mongodb-metrics`` module provides ``MongoDBReporter``, which allows your application to constantly stream metric values to a MongoDB server.
 
 image::MetricsMongoDB.png[]
 
