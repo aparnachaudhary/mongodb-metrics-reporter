@@ -8,6 +8,13 @@ image:https://img.shields.io/maven-central/v/io.github.aparnachaudhary/mongodb-m
 
 This project provides a reporter for CodaHale/DropWizard Metrics library to store the metric data in MongoDB.
 
+== How does it work?
+
+. Define MetricsRegistry which is a JVM wide singleton for metric data
+. Metrics Reporter is associated with the Metrics Registry
+. Application services are instrumented with DropWizard Metrics
+. The reporter reads the data from registry at fixed defined interval and writes this data to the MongoDB datastore is the relevant collection
+
 image::MetricsMongoDB.png[]
 
 == Build Requirements:
