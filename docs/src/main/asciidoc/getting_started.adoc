@@ -49,7 +49,7 @@ Once you add the maven dependency; next step is to create a registry and configu
 ----
 <1> MongoDB connection details
 <2> Name of the database in MongoDB
-<3> Prefixes the metrics that are reported with the give identifier
+<3> Prefixes the metrics that are reported with the given identifier
 
 
 Now that we have configured the registry and the reporter; next step is to perform some instrumentation.
