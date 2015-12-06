@@ -102,6 +102,9 @@ Executing the above program creates two collections (counter and gauge) in javas
 ----
 
 *Gauge collection:*
+
+Since we also registered the _JvmAttributeGaugeSet_; JVM metrics are registered in the _gauge_ collection.
+
 [source]
 ----
 /* 0 */
@@ -153,9 +156,12 @@ Executing the above program creates two collections (counter and gauge) in javas
 }
 ----
 
+
+
 == Samples
 
 Sample applications demonstrating the use of Metrics library with MongoDB reporter.
 
 * JavaSE application - https://github.com/aparnachaudhary/mongodb-metrics-demo/tree/master/javase-demo
+* CDI application - https://github.com/aparnachaudhary/mongodb-metrics-demo/tree/master/cdi-demo
 * JavaEE application - https://github.com/aparnachaudhary/mongodb-metrics-demo/tree/master/javaee-demo

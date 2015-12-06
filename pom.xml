@@ -245,31 +245,6 @@
                     <groupId>org.asciidoctor</groupId>
                     <artifactId>asciidoctor-maven-plugin</artifactId>
                     <version>${version.asciidoctor-maven-plugin}</version>
-                    <executions>
-                        <execution>
-                            <id>create-html</id>
-                            <phase>process-resources</phase>
-                            <goals>
-                                <goal>process-asciidoc</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <toc>true</toc>
-                        <backend>html5</backend>
-                        <doctype>book</doctype>
-                        <goalPrefix>asciidoctor</goalPrefix>
-                        <sourceHighlighter>coderay</sourceHighlighter>
-                        <attributes>
-                            <idprefix/>
-                            <sectanchors>true</sectanchors>
-                            <toclevels>3</toclevels>
-                            <numbered>true</numbered>
-                            <icons>font</icons>
-                            <docinfo>true</docinfo>
-                            <experimental>true</experimental>
-                        </attributes>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <!-- Deploy the web site -->

@@ -1,5 +1,6 @@
 = Introduction
-Aparna Chaudhary
+Aparna Chaudhary <https://twitter.com/aparnachaudhary[@aparnachaudhary]>
+{localdate}
 :toc2:
 :icons: font
 :toclevels: 2

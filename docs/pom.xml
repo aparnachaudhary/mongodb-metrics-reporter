@@ -25,6 +25,30 @@
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-html</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <backend>html5</backend>
+                    <doctype>book</doctype>
+                    <sourceHighlighter>coderay</sourceHighlighter>
+                    <attributes>
+                        <idprefix/>
+                        <sectanchors>true</sectanchors>
+                        <toclevels>3</toclevels>
+                        <numbered>true</numbered>
+                        <icons>font</icons>
+                        <docinfo>true</docinfo>
+                        <experimental>true</experimental>
+                        <projectversion>${project.version}</projectversion>
+                    </attributes>
+                </configuration>
             </plugin>
             <plugin>
                 <!-- Deploy the web site -->
@@ -41,7 +65,9 @@
                             <path>${path.gh-pages}</path>
                             <server>github-pages-site</server>
                             <!-- The commit message -->
-                            <message>Creating documentation for ${project.groupId}:${project.artifactId}-${project.version}</message>
+                            <message>Creating documentation for
+                                ${project.groupId}:${project.artifactId}-${project.version}
+                            </message>
                             <!-- The location where the site is uploaded -->
                             <outputDirectory>${doc.output}</outputDirectory>
                             <!-- Use merge or override the content -->
