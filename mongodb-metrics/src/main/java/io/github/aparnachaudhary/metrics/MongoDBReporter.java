@@ -1,10 +1,29 @@
 package io.github.aparnachaudhary.metrics;
 
-import com.codahale.metrics.*;
-import com.mongodb.*;
+import com.codahale.metrics.Clock;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Metered;
+import com.codahale.metrics.MetricFilter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.ScheduledReporter;
+import com.codahale.metrics.Snapshot;
+import com.codahale.metrics.Timer;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.MongoException;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import io.github.aparnachaudhary.metrics.model.*;
+import io.github.aparnachaudhary.metrics.model.BaseEntity;
+import io.github.aparnachaudhary.metrics.model.CounterEntity;
+import io.github.aparnachaudhary.metrics.model.GaugeEntity;
+import io.github.aparnachaudhary.metrics.model.HistogramEntity;
+import io.github.aparnachaudhary.metrics.model.MeteredEntity;
+import io.github.aparnachaudhary.metrics.model.TimerEntity;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +39,27 @@ import java.util.concurrent.TimeUnit;
 import static com.codahale.metrics.MetricRegistry.name;
 
 /**
- * Created by aparna on 11/15/15.
+ * A reporter to publish metric values to a MongoDB server.
  *
  * @author aparna
  */
 public class MongoDBReporter extends ScheduledReporter {
 
+    /**
+     * Returns a new {@link Builder} for {@link MongoDBReporter}.
+     *
+     * @param registry the registry to report
+     * @return a {@link Builder} instance for a {@link MongoDBReporter}
+     */
     public static Builder forRegistry(MetricRegistry registry) {
         return new Builder(registry);
     }
 
+    /**
+     * A builder for {@link MongoDBReporter} instances. Defaults to not using a prefix, using the default clock, converting rates to
+     * events/second, converting durations to milliseconds, and not filtering metrics. The default MongoDB database used to store metrics is
+     * 'metricstore'.
+     */
     public static class Builder {
         private final MetricRegistry registry;
         private Clock clock;
@@ -37,7 +67,7 @@ public class MongoDBReporter extends ScheduledReporter {
         private TimeUnit rateUnit;
         private TimeUnit durationUnit;
         private MetricFilter filter;
-        private ServerAddress[] serverAddresses = new ServerAddress[]{new ServerAddress("localhost", 27017)};
+        private ServerAddress[] serverAddresses = new ServerAddress[] { new ServerAddress("localhost", 27017) };
         private MongoCredential[] mongoCredentials;
         private MongoClientOptions mongoClientOptions;
         private String databaseName = "metricstore";
@@ -54,10 +84,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Inject your custom definition of how time passes. Usually the default clock is sufficient.
+         * Use the given {@link Clock} instance for the time. Usually the default clock is sufficient.
          *
          * @param clock clock
-         * @return Builder
+         * @return {@code this}
          */
         public Builder withClock(Clock clock) {
             this.clock = clock;
@@ -65,10 +95,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Configure a prefix for each metric name. Optional, but useful to identify originator of metric
+         * Configure a prefix for each metric name. Optional, but useful to identify originator of metric.
          *
          * @param prefix prefix for metric name
-         * @return Builder
+         * @return {@code this}
          */
         public Builder prefixedWith(String prefix) {
             this.prefix = prefix;
@@ -76,10 +106,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Convert all the rates to a certain TimeUnit, defaults to seconds
+         * Convert all the rates to a certain TimeUnit, defaults to TimeUnit.SECONDS.
          *
          * @param rateUnit unit of rate
-         * @return Builder
+         * @return {@code this}
          */
         public Builder convertRatesTo(TimeUnit rateUnit) {
             this.rateUnit = rateUnit;
@@ -87,10 +117,10 @@ public class MongoDBReporter extends ScheduledReporter {
         }
 
         /**
-         * Convert all the durations to a certain TimeUnit, defaults to milliseconds
+         * Convert all the durations to a certain TimeUnit, defaults to TimeUnit.MILLISECONDS
          *
          * @param durationUnit unit of duration
-         * @return Builder
+         * @return {@code this}
          */
         public Builder convertDurationsTo(TimeUnit durationUnit) {
             this.durationUnit = durationUnit;
@@ -101,45 +131,73 @@ public class MongoDBReporter extends ScheduledReporter {
          * Allows to configure a special MetricFilter, which defines what metrics are reported
          *
          * @param filter metrics filter
-         * @return Builder
+         * @return {@code this}
          */
         public Builder filter(MetricFilter filter) {
             this.filter = filter;
             return this;
         }
 
+        /**
+         * The database to write the metrics data. Defaults to 'metricstore'.
+         *
+         * @param databaseName mongodb database name
+         * @return {@code this}
+         */
         public Builder withDatabaseName(String databaseName) {
             this.databaseName = databaseName;
             return this;
         }
 
+        /**
+         * The connection details of MongoDB server.
+         *
+         * @param serverAddresses server addresses; defaults to localhost:27017.
+         * @return {@code this}
+         */
         public Builder serverAddresses(ServerAddress[] serverAddresses) {
             this.serverAddresses = serverAddresses;
             return this;
         }
 
+        /**
+         * MongoDB connection options
+         *
+         * @param mongoClientOptions MongoDB connection options.
+         * @return {@code this}
+         */
         public Builder mongoClientOptions(MongoClientOptions mongoClientOptions) {
             this.mongoClientOptions = mongoClientOptions;
             return this;
         }
 
+        /**
+         * Credentials to connect to MongoDB database.
+         *
+         * @param mongoCredentials credentials
+         * @return {@code this}
+         */
         public Builder mongoCredentials(MongoCredential[] mongoCredentials) {
             this.mongoCredentials = mongoCredentials;
             return this;
         }
 
-
         /**
          * Additional fields to be included for each metric
          *
          * @param additionalFields custom fields for reporting
-         * @return Builder
+         * @return {@code this}
          */
         public Builder additionalFields(Map<String, Object> additionalFields) {
             this.additionalFields = additionalFields;
             return this;
         }
 
+        /**
+         * Builds a {@link MongoDBReporter} with the given properties.
+         *
+         * @return a {@link MongoDBReporter}
+         */
         public MongoDBReporter build() {
             return new MongoDBReporter(registry,
                     databaseName,
@@ -166,9 +224,10 @@ public class MongoDBReporter extends ScheduledReporter {
     private final MongoDatabase mongoDatabase;
     private Map<String, Object> additionalFields;
 
-    public MongoDBReporter(MetricRegistry registry, String databaseName, ServerAddress[] serverAddresses, MongoCredential[] mongoCredentials, MongoClientOptions mongoClientOptions,
-                           Clock clock, String prefix, TimeUnit rateUnit, TimeUnit durationUnit,
-                           MetricFilter filter, Map<String, Object> additionalFields) {
+    public MongoDBReporter(MetricRegistry registry, String databaseName, ServerAddress[] serverAddresses,
+            MongoCredential[] mongoCredentials, MongoClientOptions mongoClientOptions,
+            Clock clock, String prefix, TimeUnit rateUnit, TimeUnit durationUnit,
+            MetricFilter filter, Map<String, Object> additionalFields) {
         super(registry, "mongodb-reporter", filter, rateUnit, durationUnit);
         this.databaseName = databaseName;
         this.serverAddresses = serverAddresses;
@@ -182,10 +241,10 @@ public class MongoDBReporter extends ScheduledReporter {
 
     @Override
     public void report(SortedMap<String, Gauge> gauges,
-                       SortedMap<String, Counter> counters,
-                       SortedMap<String, Histogram> histograms,
-                       SortedMap<String, Meter> meters,
-                       SortedMap<String, Timer> timers) {
+            SortedMap<String, Counter> counters,
+            SortedMap<String, Histogram> histograms,
+            SortedMap<String, Meter> meters,
+            SortedMap<String, Timer> timers) {
 
         // nothing to do if we don't have any metrics to report
         if (gauges.isEmpty() && counters.isEmpty() && histograms.isEmpty() && meters.isEmpty() && timers.isEmpty()) {
@@ -290,7 +349,6 @@ public class MongoDBReporter extends ScheduledReporter {
             LOGGER.warn("Unable to report timer {}", name, e);
         }
     }
-
 
     private void storeInMongo(MongoCollection coll, BaseEntity entity) {
         final Document document = new Document(entity);
